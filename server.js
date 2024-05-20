@@ -32,33 +32,31 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/index.html'));
 });
 
-// Middleware para verificar el token
 function verifyToken(req, res, next) {
-    // Obtén el token de la cabecera Authorization
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token == null) {
-        // Si no hay token, devuelve un error
         return res.sendStatus(401);
     }
-
-    // Verifica el token
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            // Si el token es inválido, devuelve un error
             return res.sendStatus(403);
         }
-
-        // Si el token es válido, guarda el usuario en req.user y pasa al siguiente middleware
         req.user = user;
         next();
     });
 }
 
-app.post('/api/imagine', verifyToken, async (req, res) => { // Convertir a función asíncrona
+app.post('/api/info', verifyToken, async (req, res) => {
     await client.init();
-    const prompt = req.body.prompt; // Obtener el prompt del cuerpo de la solicitud
+    const info = await client.Info();
+    res.json(info);
+});
+
+app.post('/api/imagine', verifyToken, async (req, res) => {
+    await client.init();
+    const prompt = req.body.prompt;
     const Imagine = await client.Imagine(
         prompt,
         (uri, progress) => {
@@ -68,7 +66,7 @@ app.post('/api/imagine', verifyToken, async (req, res) => { // Convertir a funci
     console.log(Imagine);
     if (!Imagine) {
         console.log("no message");
-        return res.json({ message: 'No message' }); // Enviar respuesta si no hay mensaje
+        return res.json({ message: 'No message' });
     }
 
     const U1CustomID = Imagine.options?.find((o) => o.label === "U4")?.custom;
@@ -93,20 +91,15 @@ app.post('/api/imagine', verifyToken, async (req, res) => { // Convertir a funci
     res.json({ message: 'Imagine', result: Imagine.proxy_url, upscale: Upscale.proxy_url });
 });
 
-//security
 app.post('/api/get-token', async (req, res) => {
     const password = req.body.password;
-
     try {
-        // Verificar la contraseña
         const match = await bcrypt.compare(password, hashedPassword);
 
         if (match) {
-            // Si la contraseña es correcta, genera y devuelve un token de API
             const apiToken = jwt.sign({ user: 'user' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.json({ apiToken });
+            res.json({ token: apiToken });
         } else {
-            // Si la contraseña es incorrecta, devuelve un error
             res.status(403).json({ error: 'Invalid password; use `?password=[password]` to can use the app' });
         }
     } catch (error) {
