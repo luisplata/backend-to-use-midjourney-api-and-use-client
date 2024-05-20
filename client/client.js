@@ -9,7 +9,7 @@ const errorPanel = document.getElementById('errorPanel');
 window.addEventListener('load', function () {
     errorPanel.style.display = 'block';
     errorPanel.textContent = 'Obteniendo key';
-    fetch('http://localhost:3000/api/get-token', {
+    fetch('https://midjourney.peryloth.com/api/get-token', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ document.getElementById('sendPrompt').addEventListener('click', function () {
     // Obtén el token de localStorage
     const apiToken = localStorage.getItem('apiToken');
 
-    fetch('http://localhost:3000/api/imagine', {
+    fetch('https://midjourney.peryloth.com/api/imagine', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
