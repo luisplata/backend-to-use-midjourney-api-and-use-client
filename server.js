@@ -10,7 +10,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, 'client')));
 
 //security
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const myPlaintextPassword = 'contraseniaParaConvexa@2024';
 const saltRounds = 10;
