@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'client')));
 //security
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const myPlaintextPassword = 'contraseniaParaConvexa@2024';
+const myPlaintextPassword = process.env.JWT_PASS;
 const saltRounds = 10;
 
 let hashedPassword = '';
@@ -68,27 +68,31 @@ app.post('/api/imagine', verifyToken, async (req, res) => {
         console.log("no message");
         return res.json({ message: 'No message' });
     }
-
-    const U1CustomID = Imagine.options?.find((o) => o.label === "U4")?.custom;
-    if (!U1CustomID) {
-        console.log("no U4");
-        return res.json({ message: 'No U4' });
+    upscales = [];
+    for (let i = 1; i <= 4; i++) {
+        const label = `U${i}`;
+        const customID = Imagine.options?.find((o) => o.label === label)?.custom;
+        if (!customID) {
+            upscales.push({ message: `No ${label}` });
+            continue;
+        }
+        const Upscale = await client.Custom({
+            msgId: Imagine.id,
+            flags: Imagine.flags,
+            customId: customID,
+            loading: (uri, progress) => {
+                console.log("loading", uri, "progress", progress);
+            },
+        });
+        if (!Upscale) {
+            console.log("no Upscale");
+            upscales.push({ message: 'No Upscale' });
+            continue;
+        }
+        upscales.push(Upscale.proxy_url);
     }
-    const Upscale = await client.Custom({
-        msgId: Imagine.id,
-        flags: Imagine.flags,
-        customId: U1CustomID,
-        loading: (uri, progress) => {
-            console.log("loading", uri, "progress", progress);
-        },
-    });
-    if (!Upscale) {
-        console.log("no Upscale");
-        return res.json({ message: 'No Upscale' });
-    }
-    console.log(Upscale);
 
-    res.json({ message: 'Imagine', result: Imagine.proxy_url, upscale: Upscale.proxy_url });
+    res.json({ message: 'Imagine', result: Imagine.proxy_url, upscale: upscales });
 });
 
 app.post('/api/get-token', async (req, res) => {
