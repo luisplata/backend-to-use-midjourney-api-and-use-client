@@ -76,8 +76,8 @@ app.post('/api/info', verifyToken, async (req, res) => {
 });
 
 app.post('/api/imagine', verifyToken, async (req, res) => {
-    await client.init();
     try {
+        await client.init();
         let promptOriginal = req.body.prompt;
         let prompt = encodeURIComponent(promptOriginal);
         specificLogger.info(`/api/imagine: <${req.user.token}> New prompt ${prompt}`);
@@ -117,14 +117,15 @@ app.post('/api/imagine', verifyToken, async (req, res) => {
             specificLogger.info(`/api/imagine Upscale: <${req.user.token}> New Upscale ${Upscale.proxy_url}`);
             upscales.push(Upscale.proxy_url);
         }
-        client.Close();
         res.json({ message: 'Imagine', result: Imagine.proxy_url, upscale: upscales, prompt: promptOriginal });
 
     } catch (error) {
-        client.Close();
         console.error(error.message);
         generalLogger.error(error.message);
         res.status(500).json({ error: error.message });
+    }
+    finally{
+        client.Close();
     }
 });
 
