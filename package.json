@@ -17,6 +17,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "midjourney": "^4.3.17",
+    "winston": "^3.13.0",
     "ws": "^8.17.0"
   }
 }

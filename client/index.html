@@ -1,43 +1,118 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>WebSocket Client</title>
-    <style>
-        #loadingPanel {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-        }
+<html lang="en">
 
-        #loadingText {
-            position: relative;
-            top: 50%;
-            left: 50%;
-            font-size: 20px;
-            color: white;
-            transform: translate(-50%, -50%);
-        }
-    </style>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Convexa - Bellseboss - Midjourney</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="https://avatars.githubusercontent.com/u/69124822?s=400&u=9163bd45f8bfa3d3fd855022eb33dba908c0b1af&v=4" rel="icon">
+    <link href="https://avatars.githubusercontent.com/u/69124822?s=400&u=9163bd45f8bfa3d3fd855022eb33dba908c0b1af&v=4" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Cardo:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+
+    <!-- =======================================================
+  * Template Name: PhotoFolio
+  * Template URL: https://bootstrapmade.com/photofolio-bootstrap-photography-website-template/
+  * Updated: Mar 17 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
+
 <body>
-    <div id="content" style="display: none;">
-        <h1>WebSocket Client</h1>
-        <input type="text" id="promptInput" placeholder="Enter your prompt here">
-        <button id="sendPrompt">Send Prompt</button>
-        <div id="output"></div>
-        <img id="resultImage" src="" alt="Result image">
-        <div id="loadingPanel">
-            <div id="loadingText">Loading...</div>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="header d-flex align-items-center fixed-top">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+
+            <a href="index.html" class="logo d-flex align-items-center  me-auto me-lg-0">
+                <!-- Uncomment the line below if you also wish to use an image logo -->
+                <img src="https://avatars.githubusercontent.com/u/69124822?s=400&u=9163bd45f8bfa3d3fd855022eb33dba908c0b1af&v=4"
+                    alt="">
+                <!--<i class="bi bi-link-45deg"></i>-->
+                <h1>MidJourney - Proxy</h1>
+            </a>
+
         </div>
+    </header><!-- End Header -->
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero" class="hero d-flex flex-column justify-content-center align-items-center" data-aos="fade"
+        data-aos-delay="1500">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <h2 id="message">Write your prompt</h2>
+                    <div id="prompt-fill">
+                        <p><textarea type="text" id="prompt" placeholder="Prompt" class="form-control" rows="5"></textarea></p>
+                        <button id="sendPrompt" class="btn btn-primary">Generate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- End Hero Section -->
+
+    <main id="main" data-aos="fade" data-aos-delay="1500">
+
+        <!-- ======= Gallery Section ======= -->
+        <section id="gallery" class="gallery">
+            <div class="container-fluid">
+                <div class="row gy-4 justify-content-center"  id="content-prompts">
+
+
+                </div>
+            </div>
+        </section><!-- End Gallery Section -->
+
+    </main><!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="credits">
+                Develop by <a href="https://peryloth.com" target="_blank">Peryloth</a>
+            </div>
+        </div>
+    </footer><!-- End Footer -->
+
+    <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+    <div id="preloader">
+        <div class="line"></div>
     </div>
-    <div id="errorPanel" style="display: block;">Obteniendo key</div>
-    <script src="/client.js"></script>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="assets/js/main.js"></script>
+    <script src="client.js"></script>
+
 </body>
+
 </html>
