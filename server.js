@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(cors());
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'client')));
+const timeout = require('connect-timeout');
 
 //security
 const bcrypt = require('bcryptjs');
@@ -38,6 +39,9 @@ const specificLogger = winston.createLogger({
     ]
 });
 
+//timeout
+app.use(timeout('120s'));
+
 const client = new Midjourney({
     ServerId: process.env.SERVER_ID,
     ChannelId: process.env.CHANNEL_ID,
@@ -46,7 +50,7 @@ const client = new Midjourney({
     Ws: true,
 });
 
-app.get('/', (req, res) => {
+app.get('/', haltOnTimedout, (req, res) => {
     generalLogger.info('GET /');
     res.sendFile(path.join(__dirname, 'client/index.html'));
 });
@@ -69,13 +73,17 @@ function verifyToken(req, res, next) {
     });
 }
 
-app.post('/api/info', verifyToken, async (req, res) => {
+function haltOnTimedout(req, res, next) {
+    if (!req.timedout) next();
+}
+
+app.post('/api/info', haltOnTimedout, verifyToken, async (req, res) => {
     await client.init();
     const info = await client.Info();
     res.json(info);
 });
 
-app.post('/api/imagine', verifyToken, async (req, res) => {
+app.post('/api/imagine', haltOnTimedout, verifyToken, async (req, res) => {
     try {
         await client.init();
         let promptOriginal = req.body.prompt;
@@ -124,12 +132,12 @@ app.post('/api/imagine', verifyToken, async (req, res) => {
         generalLogger.error(error.message);
         res.status(500).json({ error: error.message });
     }
-    finally{
+    finally {
         client.Close();
     }
 });
 
-app.post('/api/get-token', async (req, res) => {
+app.post('/api/get-token', haltOnTimedout, async (req, res) => {
     const password = req.body.password;
     try {
         const match = await bcrypt.compare(password, hashedPassword);
@@ -146,6 +154,7 @@ app.post('/api/get-token', async (req, res) => {
         res.status(403).json({ error: 'Invalid password; use `?password=[password]` to can use the app' });
     }
 });
+
 
 app.listen(port, () => {
     generalLogger.info(`Servidor corriendo en http://localhost:${port}`);

@@ -9,8 +9,9 @@ const preloader = document.querySelector('#preloader');
 var errorText = document.getElementById('message');
 var promptPanel = document.getElementById('prompt-fill');
 promptPanel.classList.add('visually-hidden');
-if (preloader) {
-    window.addEventListener('load', () => {
+
+window.addEventListener('load', () => {
+    if (preloader) {
         fetch('/api/get-token', {
             method: 'POST',
             headers: {
@@ -44,15 +45,9 @@ if (preloader) {
                 localStorage.setItem('apiToken', null);
                 console.error('Error:', error);
                 errorText.textContent = `Error: ${error.message}`;
-                setTimeout(() => {
-                    preloader.classList.add('loaded');
-                }, 1000);
-                setTimeout(() => {
-                    preloader.remove();
-                }, 2000);
             });
-    });
-}
+    }
+});
 
 
 document.getElementById('sendPrompt').addEventListener('click', function () {
@@ -97,6 +92,7 @@ document.getElementById('sendPrompt').addEventListener('click', function () {
                 "prompt": "A young culinary student cooking Chinese fried rice, the photo is taken from behind a shelf looking at the student as he shakes the bowl of rice over the flame, he is smiling at the camera, vibrant colors highlighting the steam rising from the wok, stainless steel kitchen equipment reflecting light, bustling atmosphere of a professional kitchen with other chefs in the background, the scene exudes excitement and passion for cooking, Photography, captured with a Canon EOS R5 and a 35mm f/1.8 lens, --ar 16:9 --v 5"
             }
             */
+            console.log(data);
             data.upscale.forEach((element, index) => {
                 SaveDataToStorage({
                     "result": data.result,
@@ -124,20 +120,23 @@ function LoadDataFromStorage() {
     if (prompt) {
         const prompts = JSON.parse(prompt);
         //sort the prompts by timestamp the most recent first
-        console.log("before",prompts);
+        console.log("before", prompts);
         prompts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        console.log("after",prompts);
+        console.log("after", prompts);
         prompts.forEach((prompt, index) => {
-            promptList.innerHTML += createHtmlFromJson(prompt);
+            if (/^(ftp|http|https):\/\/[^ "]+$/.test(prompt.upscale)) {
+                promptList.innerHTML += createHtmlFromJson(prompt);
+            }
         });
     }
-    const glightbox = GLightbox({
+    GLightbox({
         selector: '.glightbox'
     });
 }
 
 // whent the user click the button save prompt, save it in the local storage and list it in the prompt list
 function createHtmlFromJson(json) {
+    console.log(json);
     return `
             <div class="col-xl-3 col-lg-4 col-md-6">
                 <div class="gallery-item h-100">
