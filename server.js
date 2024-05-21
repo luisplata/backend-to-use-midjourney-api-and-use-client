@@ -122,6 +122,7 @@ app.post('/api/imagine', verifyToken, async (req, res) => {
 
     } catch (error) {
         client.Close();
+        console.error(error.message);
         generalLogger.error(error.message);
         res.status(500).json({ error: error.message });
     }

@@ -112,7 +112,7 @@ document.getElementById('sendPrompt').addEventListener('click', function () {
         })
         .catch((error) => {
             console.error('Error:', error);
-            errorText.textContent = 'Error: No token';
+            errorText.textContent = `Error: No token ${error.message}`;
         });
 });
 
