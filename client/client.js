@@ -45,6 +45,12 @@ window.addEventListener('load', () => {
                 localStorage.setItem('apiToken', null);
                 console.error('Error:', error);
                 errorText.textContent = `Error: ${error.message}`;
+                setTimeout(() => {
+                    preloader.classList.add('loaded');
+                }, 1000);
+                setTimeout(() => {
+                    preloader.remove();
+                }, 2000);
             });
     }
 });
