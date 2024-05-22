@@ -87,7 +87,7 @@ app.post('/api/imagine', haltOnTimedout, verifyToken, async (req, res) => {
     try {
         await client.init();
         let promptOriginal = req.body.prompt;
-        let prompt = encodeURIComponent(promptOriginal);
+        let prompt = promptOriginal;
         specificLogger.info(`/api/imagine: <${req.user.token}> New prompt ${prompt}`);
         const Imagine = await client.Imagine(
             prompt,
