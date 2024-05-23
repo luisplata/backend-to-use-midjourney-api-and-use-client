@@ -1,19 +1,36 @@
-const express = require('express');
-const { Midjourney } = require('midjourney');
-const cors = require('cors');
+import express from 'express';
+import fs from 'fs';
+import { Midjourney } from './dist/midjourney.js';
+import cors from 'cors';
+import winston from 'winston';
+import dotenv from 'dotenv';
+import path from 'path';
+import timeout from 'connect-timeout';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import {
+    Client,
+    Events,
+    GatewayIntentBits
+} from "discord.js";
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 const port = 3000;
-const winston = require('winston');
-require('dotenv/config');
+
 app.use(express.json());
 app.use(cors());
-const path = require('path');
+
 app.use(express.static(path.join(__dirname, 'client')));
-const timeout = require('connect-timeout');
+
 
 //security
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const myPlaintextPassword = process.env.JWT_PASS;
 const saltRounds = 10;
 
@@ -49,6 +66,40 @@ const client = new Midjourney({
     Debug: true,
     Ws: true,
 });
+
+//Bot Discord
+const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+bot.once(Events.ClientReady, async readyClient => {
+    console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+    const textImage = fs.readFileSync('client/images/boy-bot.txt', 'utf8');
+    SendPictureToDiscord(process.env.CHANNEL_ID_FACE, textImage,
+        link => {
+            // bot.user.setAvatar(link).then(() => {
+            //     console.log('Avatar set!');
+            // }).catch((error) => {
+            //     console.error(error);
+            // });
+        }, error => {
+            console.error(error);
+        });
+    bot.channels.cache.get(process.env.CHANNEL_ID_FACE).send('Bot is ready');
+});
+
+async function SendPictureToDiscord(channelId, imageBase64, ok, error) {
+    const base64String = imageBase64;
+    const buffer = Buffer.from(base64String, 'base64');
+    bot.channels.cache.get(channelId).send({
+        files: [buffer]
+    }).then((message) => {
+        ok(message.attachments.first().url);
+    }).catch((err) => {
+        console.error(err);
+        error(err);
+    });
+}
+
+bot.login(process.env.DISCORD_TOKEN);
 
 app.get('/', haltOnTimedout, (req, res) => {
     generalLogger.info('GET /');
@@ -152,6 +203,36 @@ app.post('/api/get-token', haltOnTimedout, async (req, res) => {
     } catch (error) {
         generalLogger.error(error);
         res.status(403).json({ error: 'Invalid password; use `?password=[password]` to can use the app' });
+    }
+});
+
+app.post('/api/face-swap', haltOnTimedout, verifyToken, async (req, res) => {
+    try {
+        specificLogger.info(`/api/face-swap: <${req.user.token}> New FaceSwap ${FaceSwap.proxy_url}`);
+        const base64String = req.body.image;
+        SendPictureToDiscord(process.env.CHANNEL_ID, base64String,
+            async link => {
+                let source = "https://cdn.midjourney.com/u/e4691495-b9cc-4630-b4bd-e6357490aa28/d81a34547c92963bb3865f364d2f3487b3c60c623b1e62fe3f67cabd1b49995a.webp";
+                // const info = await client.FaceSwap(link, source);
+
+                // console.log(info?.uri);
+                // bot.user.setAvatar(link).then(() => {
+                //     console.log('Avatar set!');
+                // }).catch((error) => {
+                //     console.error(error);
+                // });
+            }, error => {
+                console.error(error);
+            });
+
+        res.json({ message: 'FaceSwap', result: FaceSwap.proxy_url });
+    } catch (error) {
+        console.error(error.message);
+        generalLogger.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+    finally {
+        client.Close();
     }
 });
 
