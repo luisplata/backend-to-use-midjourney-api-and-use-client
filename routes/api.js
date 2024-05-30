@@ -75,7 +75,7 @@ router.post('/poli', verifyToken, async (req, res) => {
         const { image, style, context } = req.body;
         const url = await sendPictureToDiscord(process.env.CHANNEL_ID_FACE, image);
         const describe = await client.Describe(url);
-        generalLogger.info("describe", describe);
+        generalLogger.info("describe", describe.descriptions[0]);
         const description = describe.descriptions[0].replace(/.*? --ar 3:4/, '');
         const parameters = "--v 5 --stylize 1000 --ar 3:4";
         const prompt = `${url}  ${description}  ::  ${style}  ::  ${context}  ${parameters}`;
