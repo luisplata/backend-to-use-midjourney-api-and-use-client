@@ -12,7 +12,7 @@ promptPanel.classList.add('visually-hidden');
 
 window.addEventListener('load', () => {
     if (preloader) {
-        fetch('/api/get-token', {
+        fetch('/auth/get-token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
