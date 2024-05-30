@@ -2,6 +2,8 @@ const Discord = require('discord.js');
 const DiscordClient = Discord.Client;
 const Events = Discord.Events;
 const GatewayIntentBits = Discord.GatewayIntentBits;
+const dotenv = require('dotenv');
+dotenv.config();
 
 function initializeDiscordBot() {
     
