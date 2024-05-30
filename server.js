@@ -1,19 +1,16 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import timeout from 'connect-timeout';
-import cors from 'cors';
-import { configureLogging } from './utils/logger.js';
-import authRoutes from './routes/auth.js';
-import apiRoutes from './routes/api.js';
-import { initializeDiscordBot } from './discord/bot.js';
+const express = require('express');
+const dotenv = require('dotenv');
+const path = require('path');
+const timeout = require('connect-timeout');
+const cors = require('cors');
+const { configureLogging } = require('./utils/logger.js');
+const authRoutes = require('./routes/auth.js');
+const apiRoutes = require('./routes/api.js');
+const { initializeDiscordBot } = require('./discord/bot.js');
+
+// el resto de tu código
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const app = express();
 const port = 3000;

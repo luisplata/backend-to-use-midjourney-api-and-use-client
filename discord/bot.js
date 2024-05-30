@@ -1,7 +1,9 @@
-import { Client as DiscordClient, Events, GatewayIntentBits } from "discord.js";
+const Discord = require('discord.js');
+const DiscordClient = Discord.Client;
+const Events = Discord.Events;
+const GatewayIntentBits = Discord.GatewayIntentBits;
 
-
-export function initializeDiscordBot() {
+function initializeDiscordBot() {
     
     bot.on(Events.InteractionCreate, async interaction => {
         if (!interaction.isChatInputCommand()) return;
@@ -19,7 +21,7 @@ export function initializeDiscordBot() {
     bot.login(process.env.BOT_TOKEN);
 }
 
-export const bot = new DiscordClient({
+const bot = new DiscordClient({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -27,3 +29,5 @@ export const bot = new DiscordClient({
         GatewayIntentBits.GuildMembers,
     ],
 });
+
+module.exports = { initializeDiscordBot, bot };

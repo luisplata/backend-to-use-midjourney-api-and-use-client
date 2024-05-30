@@ -1,11 +1,10 @@
-import express from 'express';
-import { Midjourney } from 'midjourney';
-import { generalLogger, specificLogger } from '../utils/logger.js';
-import { verifyToken } from '../middleware/auth.js';
-import { sendPictureToDiscord, retrieveMessages } from '../utils/discordUtils.js';
-import dotenv from 'dotenv';
+const express = require('express');
+const Midjourney = require('midjourney').Midjourney;
+const { generalLogger, specificLogger } = require('../utils/logger.js');
+const { verifyToken } = require('../middleware/auth.js');
+const { sendPictureToDiscord } = require('../utils/discordUtils.js');
+const dotenv = require('dotenv');
 dotenv.config();
-import { bot } from '../discord/bot.js';
 
 const router = express.Router();
 const client = new Midjourney({
@@ -117,4 +116,4 @@ router.post('/poli', verifyToken, async (req, res) => {
     }
 });
 
-export default router;
+module.exports = router;

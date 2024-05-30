@@ -1,8 +1,8 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { specificLogger } from '../utils/logger.js';
-import dotenv from 'dotenv';
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { specificLogger } = require('../utils/logger.js');
+const dotenv = require('dotenv');
 dotenv.config();
 
 const router = express.Router();
@@ -34,4 +34,4 @@ router.post('/get-token', async (req, res) => {
     }
 });
 
-export default router;
+module.exports = router;

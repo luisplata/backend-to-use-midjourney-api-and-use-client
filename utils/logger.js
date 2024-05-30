@@ -1,6 +1,6 @@
-import winston from 'winston';
+const winston = require('winston');
 
-export const generalLogger = winston.createLogger({
+const generalLogger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
     transports: [
@@ -8,7 +8,7 @@ export const generalLogger = winston.createLogger({
     ]
 });
 
-export const specificLogger = winston.createLogger({
+const specificLogger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
     transports: [
@@ -16,6 +16,8 @@ export const specificLogger = winston.createLogger({
     ]
 });
 
-export function configureLogging() {
+function configureLogging() {
     // Additional logging configuration if necessary
 }
+
+module.exports = { generalLogger, specificLogger, configureLogging };

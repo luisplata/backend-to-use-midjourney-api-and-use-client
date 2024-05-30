@@ -1,9 +1,8 @@
-import fetch from 'node-fetch';
-import { Buffer } from 'buffer';
-import { generalLogger } from './logger.js';
-import { bot } from '../discord/bot.js';
+const fetch = import('node-fetch');
+const Buffer = require('buffer').Buffer;
+const { bot } = require('../discord/bot.js');
 
-export async function retrieveMessages(limit = 50, SalaiToken, ChannelId, DiscordBaseUrl) {
+async function retrieveMessages(limit = 50, SalaiToken, ChannelId, DiscordBaseUrl) {
     const headers = {
         "Content-Type": "application/json",
         Authorization: SalaiToken,
@@ -19,7 +18,7 @@ export async function retrieveMessages(limit = 50, SalaiToken, ChannelId, Discor
     return data;
 }
 
-export async function sendPictureToDiscord(channelId, imageBase64, textMessage = null) {
+async function sendPictureToDiscord(channelId, imageBase64, textMessage = null) {
     if (!imageBase64) {
         throw new Error('No image provided');
     }
@@ -56,3 +55,5 @@ export async function sendPictureToDiscord(channelId, imageBase64, textMessage =
         throw new Error(`Failed to send picture to Discord: ${err.message}`);
     }
 }
+
+module.exports = { retrieveMessages, sendPictureToDiscord };

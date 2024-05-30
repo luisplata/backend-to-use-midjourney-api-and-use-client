@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
-import { specificLogger } from '../utils/logger.js';
+const jwt = require('jsonwebtoken');
+const { specificLogger } = require('../utils/logger.js');
 
-export function verifyToken(req, res, next) {
+function verifyToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     const uri = req.originalUrl;
@@ -20,3 +20,5 @@ export function verifyToken(req, res, next) {
         next();
     });
 }
+
+module.exports = { verifyToken };
