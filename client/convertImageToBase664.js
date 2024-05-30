@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync } from 'fs';
+import { join, extname } from 'path';
 
 function getBase64Image(filePath) {
     const image = readFileSync(filePath);
@@ -6,7 +7,21 @@ function getBase64Image(filePath) {
     return base64Image;
 }
 
-const base64Image = getBase64Image('client/images/boy-bot.png');
+const directoryPath = 'client/images/';
 
-// Guarda la cadena base64 en un archivo de texto
-writeFileSync('client/images/boy-bot.txt', base64Image);
+// Lee todos los nombres de los archivos en el directorio
+const files = readdirSync(directoryPath);
+
+// Procesa cada archivo
+files.forEach(file => {
+    // Solo procesa los archivos de imagen
+    const ext = extname(file).toLowerCase();
+    if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
+        const filePath = join(directoryPath, file);
+        const base64Image = getBase64Image(filePath);
+
+        // Guarda la cadena base64 en un archivo de texto
+        const outputFilePath = join(directoryPath, file + '.txt');
+        writeFileSync(outputFilePath, base64Image);
+    }
+});
