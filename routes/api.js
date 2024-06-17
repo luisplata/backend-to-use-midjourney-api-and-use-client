@@ -74,12 +74,13 @@ router.post('/poli', verifyToken, async (req, res) => {
         console.log(req.body);
         const { image, style, context } = req.body;
         const url = await sendPictureToDiscord(process.env.CHANNEL_ID_FACE, image);
-        const describe = await client.Describe(url);
-        const descriptionSelected = describe.descriptions[0].split('--')[0].trim();
-        const description = descriptionSelected.substring(descriptionSelected.indexOf(' ') + 1);
+        //const describe = await client.Describe(url);
+        //const descriptionSelected = describe.descriptions[0].split('--')[0].trim();
+        //const description = descriptionSelected.substring(descriptionSelected.indexOf(' ') + 1);
         generalLogger.info({ "describe": description, "descriptionSelected": descriptionSelected });
         const parameters = "--v 5 --stylize 1000 --ar 3:4";
-        const prompt = `${url}  ${description}  ::  ${style}  ::  ${context}  ${parameters}`;
+        //const prompt = `${url}  ${description}  ::  ${style}  ::  ${context}  ${parameters}`;
+        const prompt = `${url}  ::  ${style}  ::  ${context}  ${parameters}`;
 
         await client.init();
         const Imagine = await client.Imagine(prompt, (uri, progress) => {
