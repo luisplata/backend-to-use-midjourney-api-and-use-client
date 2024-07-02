@@ -47,27 +47,35 @@ router.post('/imagine', verifyToken, async (req, res) => {
             const label = `U${i}`;
             const customID = Imagine.options?.find((o) => o.label === label)?.custom;
             if (customID) {
-                const Upscale = await client.Custom({
-                    msgId: Imagine.id,
-                    flags: Imagine.flags,
-                    customId: customID,
-                    loading: (uri, progress) => {
-                        generalLogger.info("loading", uri, "progress", progress);
-                    },
-                });
-                upscales.push(Upscale ? Upscale.proxy_url : { message: 'No Upscale' });
+                try {
+                    const Upscale = await client.Custom({
+                        msgId: Imagine.id,
+                        flags: Imagine.flags,
+                        customId: customID,
+                        loading: (uri, progress) => {
+                            generalLogger.info("loading", uri, "progress", progress);
+                        },
+                    });
+                    upscales.push(Upscale ? Upscale.proxy_url : { message: 'No Upscale' });
+                } catch (upscaleError) {
+                    generalLogger.error(`Upscale error for ${label}: ${upscaleError.message}`);
+                    upscales.push({ message: `No ${label}` });
+                }
             } else {
                 upscales.push({ message: `No ${label}` });
             }
         }
-        res.json({ message: 'Imagine', result: Imagine.proxy_url, upscale: upscales, prompt: promptOriginal });
+        return res.json({ message: 'Imagine', result: Imagine.proxy_url, upscale: upscales, prompt: promptOriginal });
     } catch (error) {
-        generalLogger.error(error.message);
-        res.status(500).json({ error: error.message });
+        generalLogger.error(`Main process error: ${error.message}`);
+        if (!res.headersSent) {
+            return res.status(500).json({ error: error.message });
+        }
     } finally {
         client.Close();
     }
 });
+
 
 router.post('/poli', verifyToken, async (req, res) => {
     try {
