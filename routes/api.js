@@ -86,9 +86,9 @@ router.post('/poli', verifyToken, async (req, res) => {
         //const descriptionSelected = describe.descriptions[0].split('--')[0].trim();
         //const description = descriptionSelected.substring(descriptionSelected.indexOf(' ') + 1);
         //generalLogger.info({ "describe": description, "descriptionSelected": descriptionSelected });
-        const parameters = "--v 5 --stylize 1000 --ar 3:4";
+        const parameters = " --ar 3:4";
         //const prompt = `${url}  ${description}  ::  ${style}  ::  ${context}  ${parameters}`;
-        const prompt = `${url}  ::  ${style}  ::  ${context}  ${parameters}`;
+        const prompt = `${url} ${context} ${parameters}`;
 
         await client.init();
         const Imagine = await client.Imagine(prompt, (uri, progress) => {
