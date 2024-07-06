@@ -26,6 +26,7 @@ router.post('/get-token', async (req, res) => {
             specificLogger.info(`/auth/get-token: New user connected ${apiToken}`);
             res.json({ token: apiToken });
         } else {
+            specificLogger.error({ error: 'Invalid password' });
             res.status(403).json({ error: 'Invalid password' });
         }
     } catch (error) {
