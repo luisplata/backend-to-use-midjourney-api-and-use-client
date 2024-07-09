@@ -76,18 +76,13 @@ router.post('/imagine', verifyToken, async (req, res) => {
     }
 });
 
-
 router.post('/poli', verifyToken, async (req, res) => {
     try {
         console.log(req.body);
         const { image, style, context } = req.body;
         const url = await sendPictureToDiscord(process.env.CHANNEL_ID_FACE, image);
-        //const describe = await client.Describe(url);
-        //const descriptionSelected = describe.descriptions[0].split('--')[0].trim();
-        //const description = descriptionSelected.substring(descriptionSelected.indexOf(' ') + 1);
-        //generalLogger.info({ "describe": description, "descriptionSelected": descriptionSelected });
+        // The description functionality is commented out, so no changes are made here.
         const parameters = " --ar 3:4";
-        //const prompt = `${url}  ${description}  ::  ${style}  ::  ${context}  ${parameters}`;
         const prompt = `${url} ${context} ${parameters}`;
 
         await client.init();
