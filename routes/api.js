@@ -152,6 +152,8 @@ function GetPromptFromID(id) {
             return "Give the image a stylish and sophisticated fashion illustration look";
         case "Grupo14":
             return "Convert the image into a detailed and precise financial an mathematical illustration+to incorporate numbers and mathematical items";
+        default:
+            throw new Error(`Invalid group: ${id}`);
     }
 }
 
