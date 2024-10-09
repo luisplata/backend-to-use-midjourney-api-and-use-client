@@ -1,6 +1,6 @@
 const express = require('express');
 const Midjourney = require('midjourney').Midjourney;
-const { generalLogger, specificLogger } = require('../utils/logger.js');
+const { generalLogger, specificLogger, customLogger } = require('../utils/logger.js');
 const { verifyToken } = require('../middleware/auth.js');
 const { sendPictureToDiscord } = require('../utils/discordUtils.js');
 const dotenv = require('dotenv');
@@ -84,7 +84,7 @@ router.post('/poli', verifyToken, async (req, res) => {
         // The description functionality is commented out, so no changes are made here.
         const parameters = " --ar 3:4";
         const prompt = `${url} ${GetPromptFromID(context)} ${parameters}`;
-
+        customLogger.info(`/api/poli: <${req.user.token}> New prompt ${prompt}`);
         await client.init();
         const Imagine = await client.Imagine(prompt, (uri, progress) => {
             generalLogger.info("loading", uri, "progress", progress);

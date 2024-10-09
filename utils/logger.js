@@ -25,6 +25,21 @@ const specificLogger = winston.createLogger({
         new winston.transports.File({ 
             filename: 'specific.log',
             maxsize: 5242880, // 5MB
+            //maxFiles: 5
+        }),
+        new winston.transports.Console()
+    ]
+});
+
+const customLogger = winston.createLogger({
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.File({ 
+            filename: 'imagine.log',
+            maxsize: 5242880, // 5MB
             maxFiles: 5
         }),
         new winston.transports.Console()
@@ -71,4 +86,4 @@ overrideConsoleLog();
 overrideConsoleError();
 
 
-module.exports = { generalLogger, specificLogger, configureLogging };
+module.exports = { generalLogger, specificLogger, customLogger, configureLogging };
