@@ -43,7 +43,7 @@ if [ $CURL_EXIT_CODE -ne 0 ]; then
 fi
 
 # Remove the log file
-rm "$RUTA_ORIGEN/$ARCHIVO_ORIGINAL"
+rm "$RUTA_ORIGEN/*.log"
 if [ $? -ne 0 ]; then
     send_error_to_discord "Failed to remove file: $RUTA_ORIGEN/$ARCHIVO_ORIGINAL" "Additional message: File removal failed."
     exit 1
