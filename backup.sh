@@ -23,10 +23,9 @@ fi
 JSON_PAYLOAD="{\"content\": \"$ESCAPED_LOG_CONTENT\nAdditional message: Backup process started.\"}"
 
 # Send the file as an attachment to the Discord webhook
-curl -H "Content-Type: application/json" \
+curl -v -H "Content-Type: multipart/form-data" \
      -F "file=@$RUTA_ORIGEN/$ARCHIVO_ORIGINAL" \
-     -X POST \
-     -d "$JSON_PAYLOAD" \
+     -F "payload_json=$JSON_PAYLOAD" \
      $WEBHOOK_URL
 CURL_EXIT_CODE=$?
 
