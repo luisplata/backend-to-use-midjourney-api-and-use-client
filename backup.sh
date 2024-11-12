@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 RUTA_ORIGEN="$HOME/polipeople.convexaestudio.com"
 ARCHIVO_ORIGINAL="imagine.log"
 
@@ -21,17 +20,11 @@ if [ ! -f "$RUTA_ORIGEN/$ARCHIVO_ORIGINAL" ]; then
     exit 1
 fi
 
-# Read the content of the file
-LOG_CONTENT=$(cat "$RUTA_ORIGEN/$ARCHIVO_ORIGINAL")
-
-# Escape JSON special characters
-ESCAPED_LOG_CONTENT=$(echo "$LOG_CONTENT" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed "s/'/\\'/g" | sed 's/`/\\`/g' | sed 's/\//\\\//g' | sed 's/\n/\\n/g' | sed 's/\r/\\r/g' | sed 's/\t/\\t/g')
-
-# Create a JSON payload
 JSON_PAYLOAD="{\"content\": \"$ESCAPED_LOG_CONTENT\nAdditional message: Backup process started.\"}"
 
-# Send the content to the Discord webhook
+# Send the file as an attachment to the Discord webhook
 curl -H "Content-Type: application/json" \
+     -F "file=@$RUTA_ORIGEN/$ARCHIVO_ORIGINAL" \
      -X POST \
      -d "$JSON_PAYLOAD" \
      $WEBHOOK_URL
