@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Cargar las variables de entorno desde el archivo .env
-export $(grep -v '^#' .env | xargs)
 
 RUTA_ORIGEN="$HOME/polipeople.convexaestudio.com"
 ARCHIVO_ORIGINAL="imagine.log"
+
+# Cargar las variables de entorno desde el archivo .env
+export $(grep -v '^#' $RUTA_ORIGEN/.env | xargs)
 
 # Función para enviar mensajes de error a Discord
 send_error_to_discord() {
