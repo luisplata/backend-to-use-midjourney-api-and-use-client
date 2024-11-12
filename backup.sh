@@ -4,7 +4,6 @@
 export $(grep -v '^#' .env | xargs)
 
 RUTA_ORIGEN="$HOME/polipeople.convexaestudio.com"
-RUTA_ORIGEN="./"
 ARCHIVO_ORIGINAL="imagine.log"
 
 # Función para enviar mensajes de error a Discord
