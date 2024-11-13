@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 const timeout = require('connect-timeout');
 const cors = require('cors');
-const { configureLogging } = require('./utils/logger.js');
 const authRoutes = require('./routes/auth.js');
 const apiRoutes = require('./routes/api.js');
 const { initializeDiscordBot } = require('./discord/bot.js');
@@ -19,9 +18,6 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'client')));
 app.use(express.json({ limit: '50mb' }));
 app.use(timeout('120s'));
-
-// Configure loggers
-configureLogging();
 
 // Initialize Discord Bot
 initializeDiscordBot();

@@ -1,6 +1,6 @@
 const express = require('express');
 const Midjourney = require('midjourney').Midjourney;
-const { generalLogger, specificLogger, customLogger } = require('../utils/logger.js');
+const { generalLogger, customLogger } = require('../utils/logger.js');
 const { verifyToken } = require('../middleware/auth.js');
 const { sendPictureToDiscord } = require('../utils/discordUtils.js');
 const dotenv = require('dotenv');
@@ -33,10 +33,9 @@ router.post('/imagine', verifyToken, async (req, res) => {
         await client.init();
         const promptOriginal = req.body.prompt;
         const prompt = promptOriginal;
-        specificLogger.info(`/api/imagine: <${req.user.token}> New prompt ${prompt}`);
 
         const Imagine = await client.Imagine(prompt, (uri, progress) => {
-            generalLogger.info("loading", uri, "progress", progress);
+            
         });
         if (!Imagine) {
             return res.json({ message: 'No message' });
@@ -53,7 +52,6 @@ router.post('/imagine', verifyToken, async (req, res) => {
                         flags: Imagine.flags,
                         customId: customID,
                         loading: (uri, progress) => {
-                            generalLogger.info("loading", uri, "progress", progress);
                         },
                     });
                     upscales.push(Upscale ? Upscale.proxy_url : { message: 'No Upscale' });
@@ -87,7 +85,7 @@ router.post('/poli', verifyToken, async (req, res) => {
         customLogger.info(`/api/poli: <${req.user.token}> New prompt ${prompt}`);
         await client.init();
         const Imagine = await client.Imagine(prompt, (uri, progress) => {
-            generalLogger.info("loading", uri, "progress", progress);
+            
         });
 
         if (!Imagine) {
@@ -104,7 +102,7 @@ router.post('/poli', verifyToken, async (req, res) => {
                     flags: Imagine.flags,
                     customId: customID,
                     loading: (uri, progress) => {
-                        generalLogger.info("loading", uri, "progress", progress);
+                        
                     },
                 });
                 upscales.push(Upscale ? Upscale.proxy_url : { message: 'No Upscale' });

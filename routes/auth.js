@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { specificLogger } = require('../utils/logger.js');
+const { generalLogger } = require('../utils/logger.js');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -23,14 +23,12 @@ router.post('/get-token', async (req, res) => {
         const match = await bcrypt.compare(password, hashedPassword);
         if (match) {
             const apiToken = jwt.sign({ user: 'user' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            specificLogger.info(`/auth/get-token: New user connected ${apiToken}`);
             res.json({ token: apiToken });
         } else {
-            specificLogger.error({ error: 'Invalid password' });
             res.status(403).json({ error: 'Invalid password' });
         }
     } catch (error) {
-        specificLogger.error(error);
+        generalLogger.error(error);
         res.status(403).json({ error: 'Invalid password' });
     }
 });

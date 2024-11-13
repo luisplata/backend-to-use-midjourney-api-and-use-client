@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { specificLogger } = require('../utils/logger.js');
+const { generalLogger } = require('../utils/logger.js');
 
 function verifyToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -12,11 +12,11 @@ function verifyToken(req, res, next) {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
+            generalLogger.error(`Error verifying token ${token} for ${uri}: ${err.message}`);
             return res.sendStatus(403);
         }
         user.token = token;
         req.user = user;
-        specificLogger.info(`verifyToken: <${token}> user ${JSON.stringify(user)} wants to access the app at ${uri}`);
         next();
     });
 }
