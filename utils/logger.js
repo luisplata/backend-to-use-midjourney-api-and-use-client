@@ -46,4 +46,4 @@ function overrideConsoleError() {
 
 overrideConsoleError();
 
-module.exports = { generalLogger, customLogger, configureLogging };
+module.exports = { generalLogger, customLogger };
