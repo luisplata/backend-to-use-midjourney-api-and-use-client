@@ -35,10 +35,10 @@ if [ $CURL_EXIT_CODE -ne 0 ]; then
 fi
 
 # Remove the log file
-rm "$RUTA_ORIGEN/$ARCHIVO_ORIGINAL"
-if [ $? -ne 0 ]; then
-    send_error_to_discord "Failed to remove file: $RUTA_ORIGEN/$ARCHIVO_ORIGINAL" "Additional message: File removal failed."
-    exit 1
-fi
+# rm "$RUTA_ORIGEN/$ARCHIVO_ORIGINAL"
+# if [ $? -ne 0 ]; then
+#     send_error_to_discord "Failed to remove file: $RUTA_ORIGEN/$ARCHIVO_ORIGINAL" "Additional message: File removal failed."
+#     exit 1
+# fi
 
 send_error_to_discord "Backup completed successfully" "Additional message: Backup process completed."
