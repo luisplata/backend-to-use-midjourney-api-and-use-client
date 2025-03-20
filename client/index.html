@@ -10,8 +10,10 @@
     <meta content="" name="keywords">
 
     <!-- Favicons -->
-    <link href="https://avatars.githubusercontent.com/u/69124822?s=400&u=9163bd45f8bfa3d3fd855022eb33dba908c0b1af&v=4" rel="icon">
-    <link href="https://avatars.githubusercontent.com/u/69124822?s=400&u=9163bd45f8bfa3d3fd855022eb33dba908c0b1af&v=4" rel="apple-touch-icon">
+    <link href="https://avatars.githubusercontent.com/u/69124822?s=400&u=9163bd45f8bfa3d3fd855022eb33dba908c0b1af&v=4"
+        rel="icon">
+    <link href="https://avatars.githubusercontent.com/u/69124822?s=400&u=9163bd45f8bfa3d3fd855022eb33dba908c0b1af&v=4"
+        rel="apple-touch-icon">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,7 +66,8 @@
                 <div class="col-lg-6 text-center">
                     <h2 id="message">Write your prompt</h2>
                     <div id="prompt-fill">
-                        <p><textarea type="text" id="prompt" placeholder="Prompt" class="form-control" rows="5"></textarea></p>
+                        <p><textarea type="text" id="prompt" placeholder="Prompt" class="form-control"
+                                rows="5"></textarea></p>
                         <button id="sendPrompt" class="btn btn-primary">Generate</button>
                     </div>
                 </div>
@@ -77,7 +80,7 @@
         <!-- ======= Gallery Section ======= -->
         <section id="gallery" class="gallery">
             <div class="container-fluid">
-                <div class="row gy-4 justify-content-center"  id="content-prompts">
+                <div class="row gy-4 justify-content-center" id="content-prompts">
 
 
                 </div>
@@ -101,6 +104,26 @@
     <div id="preloader">
         <div class="line"></div>
     </div>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-dark" id="imageModalLabel">Detalles de la Imagen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <!-- Descripción de la imagen -->
+                    <p id="modalDescription" class="mt-3 text-muted"></p>
+                    <!-- Imagen -->
+                    <img id="modalImage" src="" class="img-fluid" alt="Imagen">
+                    <!-- Botón de descarga -->
+                    <a id="downloadButton" href="#" class="btn btn-success mt-2" download>Descargar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Vendor JS Files -->
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

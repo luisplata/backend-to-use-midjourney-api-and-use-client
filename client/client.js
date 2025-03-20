@@ -122,32 +122,47 @@ async function LoadDataFromStorage() {
             promptList.innerHTML += html;
         }
     }
-
-    GLightbox({
-        selector: '.glightbox'
-    });
 }
 
 
 // whent the user click the button save prompt, save it in the local storage and list it in the prompt list
 async function createHtmlFromJson(json) {
-    let image = await getImageFromIndexedDB(json.upscale);
-    json.image_base64 = image;
+    let imageBase64 = await getImageFromIndexedDB(json.upscale);
+
     return `
-            <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="gallery-item h-100">
-                    <img src="${image}" class="img-fluid" alt="">
-                    <div class="gallery-links d-flex align-items-center justify-content-center">
-                        <a href="${json.prompt}"
-                            title="${json.upscaler} ${json.prompt}"
-                            class="glightbox preview-link">
-                            <i class="bi bi-arrows-angle-expand"></i>
-                        </a>
-                        <button class='btn btn-primary' onclick='copyToClipboard(JSON.stringify(${JSON.stringify(json)}))'>Copy</button>
-                    </div>
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="gallery-item h-100">
+                <img src="${imageBase64}" class="img-fluid" alt="" onclick="showImageModal('${imageBase64}', '${json.upscaler}')">
+                <div class="gallery-links d-flex align-items-center justify-content-center">
+                    <button class="btn btn-primary" onclick="showImageModal('${imageBase64}', '${json.prompt}')">
+                        <i class="bi bi-arrows-angle-expand"></i> Ver
+                    </button>
                 </div>
             </div>
+        </div>
     `;
+}
+
+function showImageModal(imageUrl, description) {
+    document.getElementById("modalImage").src = imageUrl; // Cargar la imagen en el modal
+    document.getElementById("modalDescription").textContent = description; // Mostrar descripción
+    document.getElementById("downloadButton").href = imageUrl; // Enlace para descargar la imagen
+
+    let imageModal = new bootstrap.Modal(document.getElementById("imageModal"));
+    imageModal.show();
+}
+
+function base64ToBlobUrl(base64) {
+    let arr = base64.split(',');
+    let mime = arr[0].match(/:(.*?);/)[1]; // Extraer el tipo MIME
+    let byteCharacters = atob(arr[1]); // Decodificar Base64
+    let byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    let byteArray = new Uint8Array(byteNumbers);
+    let blob = new Blob([byteArray], { type: mime }); // Usar el tipo MIME correcto
+    return URL.createObjectURL(blob);
 }
 
 function copyToClipboard(text) {
