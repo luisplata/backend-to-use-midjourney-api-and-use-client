@@ -30,7 +30,6 @@ window.addEventListener('load', () => {
             .then(data => {
                 // Guarda el token en localStorage
                 localStorage.setItem('apiToken', data.token);
-                console.log('Token guardado:', localStorage.getItem('apiToken'));
                 promptPanel.classList.remove('visually-hidden');
                 //Read from local storage and list the prompts
                 LoadDataFromStorage();
@@ -82,11 +81,18 @@ document.getElementById('sendPrompt').addEventListener('click', async function (
             });
             if (!response.ok) throw new Error(`Error de autenticación (Intento ${attempt})`);
             let data = await response.json();
-            console.log(data);
-            data.upscale.forEach((element, index) => {
+            await data.upscale.forEach(async (element, index) => {
+
+                if (/^(ftp|http|https):\/\/[^ "]+$/.test(data.result)) {
+
+                }
+                if (/^(ftp|http|https):\/\/[^ "]+$/.test(element)) {
+
+                }
+
                 SaveDataToStorage({
-                    "result": data.result,
-                    "upscale": element,
+                    "result": await saveImageToIndexedDB(await imageToBase64(data.result), generateUUID()),
+                    "upscale": await saveImageToIndexedDB(await imageToBase64(element), generateUUID()),
                     "prompt": data.prompt,
                     "upscaler": "U" + (index + 1),
                     "timestamp": new Date().toISOString(),
@@ -102,37 +108,37 @@ document.getElementById('sendPrompt').addEventListener('click', async function (
     }
 });
 
-function LoadDataFromStorage() {
+async function LoadDataFromStorage() {
     const promptList = document.getElementById('content-prompts');
-    //clean the prompt list
     promptList.innerHTML = '';
+
     const prompt = localStorage.getItem('prompts');
     if (prompt) {
         const prompts = JSON.parse(prompt);
-        //sort the prompts by timestamp the most recent first
-        console.log("before", prompts);
         prompts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        console.log("after", prompts);
-        prompts.forEach((prompt, index) => {
-            if (/^(ftp|http|https):\/\/[^ "]+$/.test(prompt.upscale)) {
-                promptList.innerHTML += createHtmlFromJson(prompt);
-            }
-        });
+
+        for (const prompt of prompts) {
+            const html = await createHtmlFromJson(prompt);
+            promptList.innerHTML += html;
+        }
     }
+
     GLightbox({
         selector: '.glightbox'
     });
 }
 
+
 // whent the user click the button save prompt, save it in the local storage and list it in the prompt list
-function createHtmlFromJson(json) {
-    console.log(json);
+async function createHtmlFromJson(json) {
+    let image = await getImageFromIndexedDB(json.upscale);
+    json.image_base64 = image;
     return `
             <div class="col-xl-3 col-lg-4 col-md-6">
                 <div class="gallery-item h-100">
-                    <img src="${json.upscale}" class="img-fluid" alt="">
+                    <img src="${image}" class="img-fluid" alt="">
                     <div class="gallery-links d-flex align-items-center justify-content-center">
-                        <a href="${json.upscale}"
+                        <a href="${json.prompt}"
                             title="${json.upscaler} ${json.prompt}"
                             class="glightbox preview-link">
                             <i class="bi bi-arrows-angle-expand"></i>
@@ -173,3 +179,113 @@ function SaveDataToStorage(data) {
     }
     LoadDataFromStorage();
 }
+
+async function imageToBase64(url) {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error al convertir la imagen:', error);
+        return null;
+    }
+}
+
+function saveToLocalStorage(key, value) {
+    try {
+        localStorage.setItem(key, value);
+        console.log('Imagen guardada en localStorage');
+    } catch (e) {
+        console.error('Error guardando en localStorage:', e);
+    }
+}
+
+function getFromLocalStorage(key) {
+    return localStorage.getItem(key);
+}
+
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+async function saveImageToIndexedDB(imageData, imageKey) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("ImageDB", 1);
+
+        request.onupgradeneeded = function (event) {
+            let db = event.target.result;
+            if (!db.objectStoreNames.contains("images")) {
+                db.createObjectStore("images", { keyPath: "id" });
+            }
+        };
+
+        request.onsuccess = function (event) {
+            let db = event.target.result;
+            let transaction = db.transaction("images", "readwrite");
+            let store = transaction.objectStore("images");
+            let putRequest = store.put({ id: imageKey, data: imageData });
+
+            putRequest.onsuccess = function () {
+                //console.log("Imagen guardada en IndexedDB con key:", imageKey);
+                resolve(imageKey); // Retorna la clave
+            };
+
+            putRequest.onerror = function (event) {
+                console.error("Error al guardar la imagen:", event);
+                reject(event);
+            };
+        };
+
+        request.onerror = function (event) {
+            console.error("Error al abrir IndexedDB:", event);
+            reject(event);
+        };
+    });
+}
+
+async function getImageFromIndexedDB(imageKey) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("ImageDB", 1);
+
+        request.onsuccess = function (event) {
+            let db = event.target.result;
+            let transaction = db.transaction("images", "readonly");
+            let store = transaction.objectStore("images");
+            let getRequest = store.get(imageKey);
+
+            getRequest.onsuccess = function () {
+                if (getRequest.result) {
+                    console.log("Imagen recuperada:", getRequest.result.data);
+                    resolve(getRequest.result.data); // Retorna la imagen en Base64
+                } else {
+                    console.warn("No se encontró la imagen en IndexedDB con key:", imageKey);
+                    resolve(null); // Retorna null si la imagen no existe
+                }
+            };
+
+            getRequest.onerror = function (event) {
+                console.error("Error al obtener la imagen:", event);
+                reject(event);
+            };
+        };
+
+        request.onerror = function (event) {
+            console.error("Error al abrir IndexedDB:", event);
+            reject(event);
+        };
+    });
+}
+// Ver la imagen en Base64
+//console.log(getFromLocalStorage('imageData'));
+
+// Para usar la imagen en un <img>
+//document.getElementById('miImagen').src = getFromLocalStorage('imageData');
